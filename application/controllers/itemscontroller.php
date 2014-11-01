@@ -2,10 +2,14 @@
  
 class ItemsController extends Controller {
  
+    /**
+     * [view description]
+     * @param  int $id   id of the item
+     * @param  string $name name of the person using this to do list
+     */
     function view($id = null,$name = null) {
-     
-        $this->set('title',$name.' - My Todo List App');
-        $this->set('todo',$this->Item->select($id));
+        $this->set('title', $name.' - My Todo List App');
+        $this->set('todo', $this->Item->select($id));
  
     }
      

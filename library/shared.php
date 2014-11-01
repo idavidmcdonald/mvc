@@ -85,7 +85,7 @@ function callHook() {
  
     /*
     Set $controllerName to be the general controller name, ie 'items'
-    Set $controller to be the string for $controllerName, e.g. 'ItemsController'
+    Set $controller to be the full string for $controllerName, e.g. 'ItemsController'
     Set $model to be the model to be used, e.g. 'Item'
     Set $action to be the required action, e.g. 'viewall'
      */
