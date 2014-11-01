@@ -23,7 +23,7 @@ class Controller
     }
  
     function set($name,$value) {
-        $this->_template->set($name,$value);
+        $this->_template->set($name, $value);
     }
  
     function __destruct() {

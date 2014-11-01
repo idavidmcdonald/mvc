@@ -2,6 +2,9 @@
  
 // Check if development environment and set error reporting
 
+/**
+ * [setReporting description]
+ */
 function setReporting() {
     if (DEVELOPMENT_ENVIRONMENT == true) {
         // Display all errors
@@ -19,11 +22,21 @@ function setReporting() {
 
 // Check for Magic Quotes and remove them
  
+/**
+ * [stripSlashesDeep description]
+ * @param  [type] $value
+ * @return [type]
+ */
 function stripSlashesDeep($value) {
     $value = is_array($value) ? array_map('stripSlashesDeep', $value) : stripslashes($value);
     return $value;
 }
  
+
+/**
+ * [removeMagicQuotes description]
+ * @return [type]
+ */
 function removeMagicQuotes() {
     if ( get_magic_quotes_gpc() ) {
         $_GET    = stripSlashesDeep($_GET   );
@@ -34,7 +47,10 @@ function removeMagicQuotes() {
  
 
 // Check register globals and remove them
- 
+
+/**
+ * [unregisterGlobals description]
+ */
 function unregisterGlobals() {
     if (ini_get('register_globals')) {
         $array = array('_SESSION', '_POST', '_GET', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES');
@@ -49,38 +65,50 @@ function unregisterGlobals() {
 }
  
 
-// Main Call Function
- 
+
+/**
+ * Intepret an url of the format /controller/action/query, e.g. /items/viewall/
+ * Create the controller and dispatch the action through that controller
+ */
 function callHook() {
     global $url;
+
+    // Intepret url
+        $urlArray = array();
+        $urlArray = explode("/",$url);
+
+        $controller = $urlArray[0];
+        array_shift($urlArray);
+        $action = $urlArray[0];
+        array_shift($urlArray);
+        $queryString = $urlArray;
  
-    $urlArray = array();
-    $urlArray = explode("/",$url);
- 
-    $controller = $urlArray[0];
-    array_shift($urlArray);
-    $action = $urlArray[0];
-    array_shift($urlArray);
-    $queryString = $urlArray;
- 
+    /*
+    Set $controllerName to be the general controller name, ie 'items'
+    Set $controller to be the string for $controllerName, e.g. 'ItemsController'
+    Set $model to be the model to be used, e.g. 'Item'
+    Set $action to be the required action, e.g. 'viewall'
+     */
     $controllerName = $controller;
     $controller = ucwords($controller);
     $model = rtrim($controller, 's');
     $controller .= 'Controller';
-    $dispatch = new $controller($model, $controllerName, $action);
- 
-    if ((int)method_exists($controller, $action)) {
-        call_user_func_array(array($dispatch,$action),$queryString);
-    } else {
-        /* Error Generation Code Here */
-    }
+    
+    // Create controller to dispatch our request, eg new ItemsController
+        $dispatch = new $controller($model, $controllerName, $action);
+
+    // If $action method exists then run $dispatch->$action
+        if ((int)method_exists($dispatch, $action)) {
+            call_user_func_array(array($dispatch,$action), $queryString);
+        } else {
+            /* Error Generation Code Here */
+        }
 }
  
-
-// Autoload any classes that are required
-//! use spl_autoload_register?
- 
-function __autoload($className) {
+/**
+ * Autoloader for library classes, controllers and models
+ */
+spl_autoload_register(function ($className) {
     // Load library classes
     if (file_exists(ROOT . DS . 'library' . DS . strtolower($className) . '.php')) {
         require_once(ROOT . DS . 'library' . DS . strtolower($className) . '.php');
@@ -95,7 +123,10 @@ function __autoload($className) {
     } else {
         /* Error Generation Code Here */
     }
-}
+}); 
+
+
+ 
  
 setReporting();
 removeMagicQuotes();
