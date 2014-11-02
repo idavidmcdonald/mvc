@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="../public/css/custom.css">
+<link rel="stylesheet" type="text/css" href="<?= BASE_PATH ?>/public/css/custom.css">
 <title><?= $title?></title>
 </head>
 

@@ -1,1 +1,1 @@
-<a class="big" href="../items/viewall">Todo successfully added. Click here to go back.</a>
+<a class="big" href="<?= BASE_PATH ?>/items/viewall">Todo successfully added. Click here to go back.</a>

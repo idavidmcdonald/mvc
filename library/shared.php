@@ -1,9 +1,7 @@
 <?php
  
-// Check if development environment and set error reporting
-
 /**
- * [setReporting description]
+ * Set error and logging settings based on if or if not in development environment
  */
 function setReporting() {
     if (DEVELOPMENT_ENVIRONMENT == true) {
@@ -72,16 +70,24 @@ function unregisterGlobals() {
  */
 function callHook() {
     global $url;
+    global $default;
 
     // Intepret url
-        $urlArray = array();
-        $urlArray = explode("/",$url);
+        if (!isset($url)) {
+            // No url, set default controller action and queryString
+                $controller = $default['controller'];
+                $action = $default['action'];
+                $queryString = $default['queryString'];                
+        } else {
+            $urlArray = array();
+            $urlArray = explode("/",$url);
 
-        $controller = $urlArray[0];
-        array_shift($urlArray);
-        $action = $urlArray[0];
-        array_shift($urlArray);
-        $queryString = $urlArray;
+            $controller = $urlArray[0];
+            array_shift($urlArray);
+            $action = $urlArray[0];
+            array_shift($urlArray);
+            $queryString = $urlArray;
+        }   
  
     /*
     Set $controllerName to be the general controller name, ie 'items'
