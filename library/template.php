@@ -5,11 +5,11 @@ class Template {
     protected $_controller;
     protected $_action;
     
-    
+
     /**
-     * [__construct description]
-     * @param [type] $controller [description]
-     * @param [type] $action     [description]
+     * Set properties
+     * @param string $controller 
+     * @param string $action     
      */
     function __construct($controller, $action) {
         $this->_controller = $controller;

@@ -12,7 +12,7 @@ class Controller
     protected $_template;
  
     /**
-     * [__construct description]
+     * Set properties and instantiate model and template
      * @param string $model      Name of the model
      * @param string $controller Name of the controller
      * @param string $action     Action to be done
