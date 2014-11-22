@@ -1,6 +1,6 @@
 <?php
 
 // Set default controller and action
-	$default['controller'] = 'items';
-	$default['action'] = 'viewall';
+	$default['controller'] = '';
+	$default['action'] = '';
 	$default['queryString'] = array();

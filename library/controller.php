@@ -25,7 +25,8 @@ class Controller
  
         $this->$model = new $model;
         $this->_template = new Template($controller, $action);
- 
+        $this->setDefaults();
+
     }
  
     /**
@@ -35,6 +36,15 @@ class Controller
      */
     function set($name,$value) {
         $this->_template->set($name, $value);
+    }
+
+    /**
+     * Set all default variables for $this->_template as defined in $this->defaults
+     */
+    function setDefaults(){
+        foreach ($this->defaults as $name => $value) {
+            $this->set($name, $value);
+        }
     }
  
     /**
