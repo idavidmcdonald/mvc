@@ -61,7 +61,6 @@ function unregisterGlobals() {
         }
     }
 }
- 
 
 
 /**
@@ -109,6 +108,19 @@ function callHook() {
         } else {
             /* Error Generation Code Here */
         }
+}
+
+/**
+ * Redirect to a controller/action/queryString
+ */
+function redirect($controller,$action,$queryString = null){
+    $controllerName = ucfirst($controller).'Controller';
+    $controller = ucwords($controller);
+    $model = rtrim($controller, 's');
+
+    $location = BASE_PATH . "/" . $controller . "/" . $action . "/" . $queryString;
+    header("Location: " . $location);
+    exit;
 }
  
 /**

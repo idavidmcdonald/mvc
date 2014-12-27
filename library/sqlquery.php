@@ -139,9 +139,9 @@ class Sqlquery {
      * @param  int $resultsPerPage How many results should be shown on each page
      * @return array               Array of results
      */
-    function getPage($pageNumber, $resultsPerPage = 5){
-        $offset = $pageNumber * $resultsPerPage - 1;
-        echo $query = "SELECT * FROM " . $this->_table . " LIMIT " . $offset . ', ' .  $resultsPerPage;
+    function getPage($pageNumber = 1, $resultsPerPage = 5){
+        $offset = ($pageNumber - 1) * $resultsPerPage;
+        $query = "SELECT * FROM " . $this->_table . " LIMIT " . $offset . ', ' .  $resultsPerPage;
         return $this->query($query);
     }
  
