@@ -10,6 +10,8 @@ class Controller
 	protected $_controller;
     protected $_action;
     protected $_template;
+
+    public $defaults;
  
     /**
      * Set properties and instantiate model and template
