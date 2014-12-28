@@ -141,7 +141,7 @@ class Sqlquery {
      */
     function getPage($pageNumber = 1, $resultsPerPage = 5){
         $offset = ($pageNumber - 1) * $resultsPerPage;
-        $query = "SELECT * FROM " . $this->_table . " LIMIT " . $offset . ', ' .  $resultsPerPage;
+        $query = "SELECT * FROM " . $this->_table . " ORDER BY id DESC LIMIT " . $offset . ', ' .  $resultsPerPage;
         return $this->query($query);
     }
  
