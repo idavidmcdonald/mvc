@@ -58,6 +58,20 @@ class Controller
             }
         }
     }
+
+
+    /**
+     * Redirect to a controller/action/queryString
+     */
+    function redirect($controller,$action,$queryString = null){
+        $controllerName = ucfirst($controller).'Controller';
+        $controller = ucwords($controller);
+        $model = rtrim($controller, 's');
+
+        $location = BASE_PATH . "/" . $controller . "/" . $action . "/" . $queryString;
+        header("Location: " . $location);
+        exit;
+    }
  
     /**
      * On destruct, render $this->_template 
