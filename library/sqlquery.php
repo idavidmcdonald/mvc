@@ -56,9 +56,30 @@ class Sqlquery {
      * @return mixed        escaped array or string
      */
     function sanitise($input){
-        $value = is_array($input) ? array_map('sanitise', $input) : sanitiseString($input);
+        $value = is_array($input) ? array_map(array($this, 'sanitise'), $input) : $this->sanitiseString($input);
         return $value;
     }
+
+
+    /** Add quotes around a string
+     * @param  string $string raw string
+     * @return string         quoted string
+     */
+    function addQuotesString($string){
+        return "'" . $string . "'";
+    }
+
+
+    /**
+     * Add quotes around all values in an array or string
+     * @param  mixed $input raw array or string
+     * @return mixed        quoted array or string
+     */
+    function addQuotes($input){
+        $value = is_array($input) ? array_map(array($this, 'addQuotes'), $input) : $this->addQuotesString($input);
+        return $value;
+    }
+
      
     /**
      * Select all rows for this table
@@ -78,6 +99,22 @@ class Sqlquery {
     function select($id) {
         $query = 'SELECT * FROM ' . $this->_table . ' WHERE id = ' . $this->sanitise($id);
         return $this->query($query, 1);    
+    }
+
+    // To do: swap to prepared statements
+    function insert(array $data){
+        if (empty($data)) {
+            return false;
+        }
+        
+        $data = $this->sanitise($data);
+        $data = $this->addQuotes($data);
+        $columns = implode(', ', array_keys($data));
+        $values = implode(', ', array_values($data));
+
+        $query = 'INSERT INTO ' . $this->_table . ' (' . $columns . ') VALUES (' . $values . ')';
+
+        $this->query($query);
     }
  
      
