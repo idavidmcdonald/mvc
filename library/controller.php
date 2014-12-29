@@ -28,8 +28,8 @@ class Controller
         $this->$model = new $model;
     }
 
-    function addView($controller, $action){
-        $this->_template = new Template($controller, $action);
+    function addView($controller, $action, $renderHeaderFooter = true){
+        $this->_template = new Template($controller, $action, $renderHeaderFooter);
         $this->setDefaults();
     }
 

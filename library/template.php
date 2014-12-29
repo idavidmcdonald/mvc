@@ -4,6 +4,7 @@ class Template {
     protected $variables = array();
     protected $_controller;
     protected $_action;
+    protected $_renderHeaderFooter;
     
 
     /**
@@ -11,9 +12,10 @@ class Template {
      * @param string $controller 
      * @param string $action     
      */
-    function __construct($controller, $action) {
+    function __construct($controller, $action, $renderHeaderFooter = true) {
         $this->_controller = $controller;
         $this->_action = $action;
+        $this->_renderHeaderFooter = $renderHeaderFooter;
     }
  
    
@@ -35,20 +37,25 @@ class Template {
             extract($this->variables);
          
         // Render appropriate header.php file
-            if (file_exists(ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'header.php')) {
-                include (ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'header.php');
-            } else {
-                include (ROOT . DS . 'application' . DS . 'views' . DS . 'header.php');
+            if ($this->_renderHeaderFooter) {
+                if (file_exists(ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'header.php')) {
+                    include (ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'header.php');
+                } else {
+                    include (ROOT . DS . 'application' . DS . 'views' . DS . 'header.php');
+                }
             }
+            
  
         // Render controller/action file
             include (ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . $this->_action . '.php');       
              
-        // Render appropriate footer.php file     
-            if (file_exists(ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'footer.php')) {
-                include (ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'footer.php');
-            } else {
-                include (ROOT . DS . 'application' . DS . 'views' . DS . 'footer.php');
+        // Render appropriate footer.php file
+            if ($this->_renderHeaderFooter) {     
+                if (file_exists(ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'footer.php')) {
+                    include (ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'footer.php');
+                } else {
+                    include (ROOT . DS . 'application' . DS . 'views' . DS . 'footer.php');
+                }
             }
     }
  
