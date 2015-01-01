@@ -20,7 +20,6 @@ class Controller
      * @param string $action     Action to be done
      */
     function __construct($model, $controller, $action) {
-         
         $this->_controller = $controller;
         $this->_action = $action;
         $this->_model = $model;
@@ -63,14 +62,20 @@ class Controller
     /**
      * Redirect to a controller/action/queryString
      */
-    function redirect($controller,$action,$queryString = null){
-        $controllerName = ucfirst($controller).'Controller';
-        $controller = ucwords($controller);
-        $model = rtrim($controller, 's');
+    function redirect($controller, $action, $parameter1 = null, $parameter2 = null, $parameter3 = null){
+        // Do not add null parameters to our url
+            $input = func_get_args();
+            foreach ($input as $value) {
+                if (!is_null($value)) {
+                    $notNullInputs[] = $value;
+                }
+            }
 
-        $location = BASE_PATH . "/" . $controller . "/" . $action . "/" . $queryString;
-        header("Location: " . $location);
-        exit;
+        // Implode url and redirect
+            $url = implode('/', $notNullInputs);
+            $location = BASE_PATH . "/" . $url;
+            header("Location: " . $location);
+            exit;
     }
  
     /**
