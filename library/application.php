@@ -2,11 +2,18 @@
  
 class Application {
 
+    protected $controller;
+    protected $action;
+    protected $parameter1;
+    protected $parameter2;
+    protected $parameter3;
+
+
     function __construct(){
         $this->setReporting();
         $this->removeMagicQuotes();
         $this->unregisterGlobals();
-        $this->callHook();
+        $this->executeRequest();
     }
 
     /**
@@ -25,14 +32,11 @@ class Application {
             ini_set('error_log', ROOT.DS.'tmp'.DS.'logs'.DS.'error.log');
         }
     }
-     
-
-    // Check for Magic Quotes and remove them
-     
+          
     /**
-     * [stripSlashesDeep description]
-     * @param  [type] $value
-     * @return [type]
+     * Strip slashes from an array or string
+     * @param  mixed $value array or string to be stripped
+     * @return mixed        array or string after stripping
      */
     public function stripSlashesDeep($value) {
         $value = is_array($value) ? array_map(array($this, 'stripSlashesDeep'), $value) : $this->stripslashes($value);
@@ -41,8 +45,7 @@ class Application {
      
 
     /**
-     * [removeMagicQuotes description]
-     * @return [type]
+     * Check for magic quotes and remove them
      */
     public function removeMagicQuotes() {
         if ( get_magic_quotes_gpc() ) {
@@ -53,10 +56,8 @@ class Application {
     }
      
 
-    // Check register globals and remove them
-
     /**
-     * [unregisterGlobals description]
+     * Check register globals and remove them
      */
     public function unregisterGlobals() {
         if (ini_get('register_globals')) {
@@ -73,51 +74,83 @@ class Application {
 
 
     /**
-     * Intepret an url of the format /controller/action/query, e.g. /items/viewall/
-     * Create the controller and dispatch the action through that controller
+     * Get the current url and load into controller, action and parameter properties
+     * By default, use null if property is not set
+     * Example url: /controller/action/parameter1/parameter2/parameter3
      */
-    public function callHook() {
+    public function splitURL(){
         global $url;
-        global $default;
 
-        // Intepret url
-            if (!isset($url)) {
-                // No url, set default controller action and queryString
-                    $controller = $default['controller'];
-                    $action = $default['action'];
-                    $queryString = $default['queryString'];                
-            } else {
-                $urlArray = array();
-                $urlArray = explode("/",$url);
-
-                $controller = $urlArray[0];
-                array_shift($urlArray);
-                $action = $urlArray[0];
-                array_shift($urlArray);
-                $queryString = $urlArray;
-            }   
-     
-        /*
-        Set $controllerName to be the general controller name, ie 'items'
-        Set $controller to be the full string for $controllerName, e.g. 'ItemsController'
-        Set $model to be the model to be used, e.g. 'Item'
-        Set $action to be the required action, e.g. 'viewall'
-         */
-        $controllerName = $controller;
-        $controller = ucwords($controller);
-        $model = rtrim($controller, 's');
-        $controller .= 'Controller';
-        
-        // Create controller to dispatch our request, eg new ItemsController
-            $dispatch = new $controller($model, $controllerName, $action);
-
-        // If $action method exists then run $dispatch->$action
-            if ((int)method_exists($dispatch, $action)) {
-                call_user_func_array(array($dispatch,$action), $queryString);
-            } else {
-                /* Error Generation Code Here */
-            }
+        $url = explode('/', $url);
+        $this->controller = (!empty($url[0]) ? $url[0] : null);
+        $this->action     = (!empty($url[1]) ? $url[1] : null);
+        $this->parameter1 = (isset($url[2]) ? $url[2] : null);
+        $this->parameter2 = (isset($url[3]) ? $url[3] : null);
+        $this->parameter3 = (isset($url[4]) ? $url[4] : null);
     }
 
+
+    /**
+     * Validate $this->controller and $this->action
+     * If they are not set then set as default values
+     * If they are invalid then set as error page values
+     */
+    public function validateRequest(){
+        global $default;
+
+        // Validate controller
+            if (!($this->controller)) {
+                // No controller set, Use defaults
+                    $this->controller = $default['controller'];
+                    $this->action     = $default['action'];
+                    $this->parameter1 = $default['parameter1']; 
+                    $this->parameter2 = $default['parameter2'];
+                    $this->parameter3 = $default['parameter3'];
+            } 
+
+            // Check controller exists
+            
+        // Validate action
+            if (!isset($this->action)) {
+                // No action set, try index
+                    $this->action = 'index';
+            } 
+
+            // Create controller to dispatch our request, eg new ItemsController
+                $model = ucwords(rtrim($this->controller, 's'));
+                $controller = ucwords($this->controller) . 'Controller';
+                $dispatch = new $controller($model, $this->controller, $this->action);
+
+            // Check $action method exists
+                if (!method_exists($dispatch, $this->action)) {
+                    // Show error page
+                }                      
+    }
+
+    /**
+     * Get the URL that has been requested, validate it and then
+     * create the controller and dispatch the action through that controller
+     */
+    public function executeRequest() {
+        $this->splitURL();
+        $this->validateRequest();
+
+        // Create controller to dispatch our request, eg new BlogsController
+        // Note format eg $dispatch = new BlogsController('Blog', 'blogs', 'index')
+            $model = ucwords(rtrim($this->controller, 's'));
+            $controller = ucwords($this->controller) . 'Controller';
+            $dispatch = new $controller($model, $this->controller, $this->action);
+
+        // Execute
+            if (!isset($this->parameter1)) {
+                call_user_func(array($dispatch, $this->action));
+            } else if (!isset($this->parameter2)) {
+                call_user_func(array($dispatch, $this->action), $this->parameter1);
+            } else if (!isset($this->parameter3)) {
+                call_user_func(array($dispatch, $this->action), $this->parameter1, $this->parameter2);
+            } else {
+                call_user_func(array($dispatch, $this->action), $this->parameter1, $this->parameter2, $this->parameter3);
+            }
+    }
  
 }
